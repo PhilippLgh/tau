@@ -84,7 +84,7 @@ namespace api {
 	}
 
 	void BrowserWindow::Init(Local<Object> exports) {
-		// Isolate* isolate = exports->GetIsolate();
+		Isolate* isolate = exports->GetIsolate();
 
 		// Prepare constructor template
 		Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New);
@@ -99,7 +99,7 @@ namespace api {
 	}
 
 	void BrowserWindow::New(const FunctionCallbackInfo<Value>& args) {
-		Isolate* isolate = args.GetIsolate();
+		// Isolate* isolate = args.GetIsolate();
 
 		printf("browser window constructor called %s \n", args.IsConstructCall() ? "true" : "false");
 
