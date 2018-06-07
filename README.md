@@ -46,15 +46,15 @@ make -j4 cefclient cefsimple
 
 # To perform a macOS build using a 64-bit CEF binary distribution:
 cmake -G "Xcode" ..
-# Then, open build\cef.xcodeproj in Xcode and select Product > Build.
+# Then, open build\tau.xcodeproj in Xcode and select Product > Build.
 
 # To perform a Windows build using a 32-bit CEF binary distribution:
 cmake -G "Visual Studio 15" ..
-# Then, open build\cef.sln in Visual Studio 2017 and select Build > Build Solution.
+# Then, open build\tau.sln in Visual Studio 2017 and select Build > Build Solution.
 
 # To perform a Windows build using a 64-bit CEF binary distribution:
 cmake -G "Visual Studio 15 Win64" ..
-# Then, open build\cef.sln in Visual Studio 2017 and select Build > Build Solution.
+# Then, open build\tau.sln in Visual Studio 2017 and select Build > Build Solution.
 ```
 
 CMake supports different generators on each platform. Run `cmake --help` to list all supported generators. Generators that have been tested include:
