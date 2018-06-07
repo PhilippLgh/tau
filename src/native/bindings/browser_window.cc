@@ -84,7 +84,7 @@ namespace api {
 	}
 
 	void BrowserWindow::Init(Local<Object> exports) {
-		Isolate* isolate = exports->GetIsolate();
+		// Isolate* isolate = exports->GetIsolate();
 
 		// Prepare constructor template
 		Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New);
