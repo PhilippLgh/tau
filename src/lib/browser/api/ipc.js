@@ -1,6 +1,6 @@
-const ipc = process._linkedBinding('ipc')
+//const ipc = process._linkedBinding('ipc')
 
 module.exports = {
     on: () => { },
-    hello: ipc.hello
+    //hello: ipc.hello
 }

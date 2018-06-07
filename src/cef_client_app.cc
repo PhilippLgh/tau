@@ -2,7 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#include "simple_app.h"
+#include "cef_client_app.h"
 
 #include <string>
 
@@ -52,11 +52,12 @@ class SimpleWindowDelegate : public CefWindowDelegate {
 
 }  // namespace
 
-SimpleApp::SimpleApp() {}
+CefClientApp::CefClientApp() {}
 
-void SimpleApp::OnContextInitialized() {
+void CefClientApp::OnContextInitialized() {
   CEF_REQUIRE_UI_THREAD();
 
+  /*
   CefRefPtr<CefCommandLine> command_line = CefCommandLine::GetGlobalCommandLine();
 
 #if defined(OS_WIN) || defined(OS_LINUX)
@@ -102,4 +103,5 @@ void SimpleApp::OnContextInitialized() {
     // Create the first browser window.
     CefBrowserHost::CreateBrowser(window_info, handler, url, browser_settings, NULL);
   }
+        */
 }

@@ -6,68 +6,74 @@
 # Source files.
 #
 
-# cefsimple sources.
-set(CEFSIMPLE_SRCS
-  simple_app.cc
-  simple_app.h
+# tau sources.
+set(TAU_SRCS
+  cef_client_app.cc
+  cef_client_app.h
+  node_main.cc
+  node_main.h  
+  native/bindings/browser_window.cc
+  native/bindings/browser_window.h
+  native/bindings/ipc.cc
+  native/bindings/ipc.h
   simple_handler.cc
   simple_handler.h
   )
-set(CEFSIMPLE_SRCS_LINUX
-  cefsimple_linux.cc
+set(TAU_SRCS_LINUX
+  tau_linux.cc
   simple_handler_linux.cc
   )
-set(CEFSIMPLE_SRCS_MACOSX
-  cefsimple_mac.mm
+set(TAU_SRCS_MACOSX
+  tau_mac.mm
   simple_handler_mac.mm
   )
-set(CEFSIMPLE_SRCS_WINDOWS
+set(TAU_SRCS_WINDOWS
   tau.exe.manifest
-  cefsimple.rc
-  cefsimple_win.cc
+  tau.rc
+  tau_win.cc
   resource.h
   simple_handler_win.cc
   )
-APPEND_PLATFORM_SOURCES(CEFSIMPLE_SRCS)
-source_group(cefsimple FILES ${CEFSIMPLE_SRCS})
+APPEND_PLATFORM_SOURCES(TAU_SRCS)
+source_group(src FILES ${TAU_SRCS})
 
-set(CEFSIMPLE_RES_SRCS_WINDOWS
-  res/cefsimple.ico
+set(TAU_RES_SRCS_WINDOWS
+  res/tau.ico
   res/small.ico
   )
-APPEND_PLATFORM_SOURCES(CEFSIMPLE_RES_SRCS)
-source_group(cefsimple\\\\res FILES ${CEFSIMPLE_RES_SRCS})
+APPEND_PLATFORM_SOURCES(TAU_RES_SRCS)
+source_group(src\\\\res FILES ${TAU_RES_SRCS})
 
-set(CEFSIMPLE_SRCS
-  ${CEFSIMPLE_SRCS}
-  ${CEFSIMPLE_RES_SRCS}
+set(TAU_SRCS
+  ${TAU_SRCS}
+  ${TAU_RES_SRCS}
   )
 
-# cefsimple helper sources.
-set(CEFSIMPLE_HELPER_SRCS_MACOSX
+# tau helper sources.
+set(TAU_HELPER_SRCS_MACOSX
   process_helper_mac.cc
   )
-APPEND_PLATFORM_SOURCES(CEFSIMPLE_HELPER_SRCS)
-source_group(cefsimple FILES ${CEFSIMPLE_HELPER_SRCS})
+APPEND_PLATFORM_SOURCES(TAU_HELPER_SRCS)
+source_group(src FILES ${TAU_HELPER_SRCS})
 
-# cefsimple resources.
-set(CEFSIMPLE_RESOURCES_MAC_SRCS_MACOSX
+# tau resources.
+set(TAU_RESOURCES_MAC_SRCS_MACOSX
   mac/Info.plist
-  mac/cefsimple.icns
+  mac/tau.icns
   )
-APPEND_PLATFORM_SOURCES(CEFSIMPLE_RESOURCES_MAC_SRCS)
-source_group(cefsimple\\\\mac FILES ${CEFSIMPLE_RESOURCES_MAC_SRCS})
+APPEND_PLATFORM_SOURCES(TAU_RESOURCES_MAC_SRCS)
+source_group(src\\\\mac FILES ${TAU_RESOURCES_MAC_SRCS})
 
-set(CEFSIMPLE_RESOURCES_MAC_ENGLISH_LPROJ_SRCS_MACOSX
+set(TAU_RESOURCES_MAC_ENGLISH_LPROJ_SRCS_MACOSX
   mac/English.lproj/InfoPlist.strings
   mac/English.lproj/MainMenu.xib
   )
-APPEND_PLATFORM_SOURCES(CEFSIMPLE_RESOURCES_MAC_ENGLISH_LPROJ_SRCS)
-source_group(cefsimple\\\\mac\\\\English.lproj FILES ${CEFSIMPLE_RESOURCES_MAC_ENGLISH_LPROJ_SRCS})
+APPEND_PLATFORM_SOURCES(TAU_RESOURCES_MAC_ENGLISH_LPROJ_SRCS)
+source_group(src\\\\mac\\\\English.lproj FILES ${TAU_RESOURCES_MAC_ENGLISH_LPROJ_SRCS})
 
-set(CEFSIMPLE_RESOURCES_SRCS
-  ${CEFSIMPLE_RESOURCES_MAC_SRCS}
-  ${CEFSIMPLE_RESOURCES_MAC_ENGLISH_LPROJ_SRCS}
+set(TAU_RESOURCES_SRCS
+  ${TAU_RESOURCES_MAC_SRCS}
+  ${TAU_RESOURCES_MAC_ENGLISH_LPROJ_SRCS}
   )
 
 
@@ -98,7 +104,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/third_party/uv/include")
 
 if(OS_LINUX)
   # Executable target.
-  add_executable(${CEF_TARGET} ${CEFSIMPLE_SRCS})
+  add_executable(${CEF_TARGET} ${TAU_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${CEF_TARGET})
   add_dependencies(${CEF_TARGET} libcef_dll_wrapper)
   target_link_libraries(${CEF_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
@@ -130,7 +136,7 @@ if(OS_MACOSX)
   set(PRODUCT_NAME "${CEF_TARGET}")
 
   # Helper executable target.
-  add_executable(${CEF_HELPER_TARGET} MACOSX_BUNDLE ${CEFSIMPLE_HELPER_SRCS})
+  add_executable(${CEF_HELPER_TARGET} MACOSX_BUNDLE ${TAU_HELPER_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${CEF_HELPER_TARGET})
   add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
   target_link_libraries(${CEF_HELPER_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
@@ -143,7 +149,7 @@ if(OS_MACOSX)
   FIX_MACOSX_HELPER_FRAMEWORK_RPATH(${CEF_HELPER_TARGET})
 
   # Main executable target.
-  add_executable(${CEF_TARGET} MACOSX_BUNDLE ${CEFSIMPLE_RESOURCES_SRCS} ${CEFSIMPLE_SRCS})
+  add_executable(${CEF_TARGET} MACOSX_BUNDLE ${TAU_RESOURCES_SRCS} ${TAU_SRCS})
   SET_EXECUTABLE_TARGET_PROPERTIES(${CEF_TARGET})
   add_dependencies(${CEF_TARGET} libcef_dll_wrapper "${CEF_HELPER_TARGET}")
   target_link_libraries(${CEF_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})
@@ -182,7 +188,7 @@ if(OS_MACOSX)
   # directive but that doesn't properly handle nested resource directories.
   # Remove these prefixes from input file paths.
   set(PREFIXES "mac/")
-  COPY_MACOSX_RESOURCES("${CEFSIMPLE_RESOURCES_SRCS}" "${PREFIXES}" "${CEF_TARGET}" "${CMAKE_CURRENT_SOURCE_DIR}" "${CEF_APP}")
+  COPY_MACOSX_RESOURCES("${TAU_RESOURCES_SRCS}" "${PREFIXES}" "${CEF_TARGET}" "${CMAKE_CURRENT_SOURCE_DIR}" "${CEF_APP}")
 endif()
 
 
@@ -196,9 +202,9 @@ if(OS_WINDOWS)
   #CONSOLE APP instead of windows app
 
   # Executable target.
-  # add_executable(${CEF_TARGET} WIN32 ${CEFSIMPLE_SRCS})
+  # add_executable(${CEF_TARGET} WIN32 ${TAU_SRCS})
   # make console app
-  add_executable(${CEF_TARGET} ${CEFSIMPLE_SRCS})
+  add_executable(${CEF_TARGET} ${TAU_SRCS})
   add_dependencies(${CEF_TARGET} libcef_dll_wrapper)
   SET_EXECUTABLE_TARGET_PROPERTIES(${CEF_TARGET})
   target_link_libraries(${CEF_TARGET} libcef_lib libcef_dll_wrapper ${CEF_STANDARD_LIBS})

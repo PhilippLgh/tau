@@ -1,8 +1,8 @@
-// Copyright (c) 2013 The Chromium Embedded Framework Authors. All rights
-// reserved. Use of this source code is governed by a BSD-style license that
-// can be found in the LICENSE file.
-
+#include <stdio.h>
 #include <iostream>
+#include <sstream>
+
+using namespace std;
 
 // NODE related headers
 #define NODE_WANT_INTERNALS 1
@@ -19,20 +19,9 @@ using ::v8::Context;
 using ::v8::Local;
 using ::v8::Value;
 
-#include "include/cef_sandbox_win.h"
-#include "simple_app.h"
+#include "native/bindings/ipc.h"
 
-// When generating projects with CMake the CEF_USE_SANDBOX value will be defined
-// automatically if using the required compiler version. Pass -DUSE_SANDBOX=OFF
-// to the CMake command-line to disable use of the sandbox.
-// Uncomment this line to manually enable sandbox support.
-// #define CEF_USE_SANDBOX 1
-
-#if defined(CEF_USE_SANDBOX)
-// The cef_sandbox.lib static library is currently built with VS2013. It may not
-// link successfully with other VS versions.
-#pragma comment(lib, "cef_sandbox.lib")
-#endif
+#include "include/cef_app.h"
 
 // helpers:
 #ifdef _WIN32
@@ -58,16 +47,35 @@ std::string getexepath() {
 
 std::string getbasedirpath() {
   std::string exe_path = getexepath();
-  std::string exe_dir = exe_path.substr(0, exe_path.find_last_of(PATH_SEPARATOR));
+  std::string exe_dir =
+      exe_path.substr(0, exe_path.find_last_of(PATH_SEPARATOR));
   return exe_dir + "/../../..";  // bin/Debug/tau.exe || bin/Release/tau.exe
 }
-#endif
 
 void log(std::string str) {
   std::stringstream ss;
   ss << "init path: " << str << "\n";
   OutputDebugStringA(ss.str().c_str());
 }
+#elif APPLE
+#include <mach-o/dyld.h>
+const std::string PATH_SEPARATOR = "/";
+std::string getexepath() {
+  char path[1024];
+  uint32_t size = sizeof(path);
+  int count = _NSGetExecutablePath(path, &size);
+  path[size] = '\0';
+  std::string res = std::string(path, size);
+  return res;
+}
+std::string getbasedirpath() {
+  std::string exe_path = getexepath();
+  std::string exe_dir =
+      exe_path.substr(0, exe_path.find_last_of(PATH_SEPARATOR));
+  // tau/build/src/Debug/tau.app/Contents/MacOS/../../../../../../src/lib/browser/init.js
+  return exe_dir + "/../../../../../..";
+}
+#endif
 
 char* getCString(std::string str) {
   char* cstr = new char[str.length() + 1];
@@ -75,9 +83,19 @@ char* getCString(std::string str) {
   return cstr;
 }
 
-namespace {
 using namespace v8;
 using namespace node;
+
+void CustomMethod(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+
+  double value = args[0]->NumberValue() + args[1]->NumberValue();
+  Local<Number> num = Number::New(isolate, value);
+
+  // Set the return value (using the passed in
+  // FunctionCallbackInfo<Value>&)
+  args.GetReturnValue().Set(num);
+}
 
 int node_start() {
   char arg[] = "";
@@ -88,8 +106,6 @@ int node_start() {
 
   printf("exe dir is %s \n", base_path.c_str());
   std::string init_path = base_path + "/src/lib/browser/init.js";
-
-  log(init_path);	
 
   char* argv[] = {arg, getCString(init_path)};
   int argc = 2;
@@ -170,13 +186,9 @@ int node_start() {
     global->Set(v8::String::NewFromUtf8(isolate, "globalConstantTest"),
                 String::NewFromUtf8(isolate, "I was set in C++"));
 
-    // NODE_SET_METHOD(global, "addFast", AddFast);
+    NODE_SET_METHOD(global, "customMethod", CustomMethod);
 
-    // api::BrowserWindow win = api::BrowserWindow(isolate, global);
-
-    // registerModules();
-
-    // RegisterBuiltinCustomModules();
+	RegisterBuiltinCustomModules();
 
     //..................
 
@@ -189,7 +201,7 @@ int node_start() {
 
     bool more;
     do {
-      // CefDoMessageLoopWork();
+      CefDoMessageLoopWork();
 
       more = uv_run(loop, UV_RUN_ONCE);
 
@@ -221,70 +233,6 @@ int node_start() {
   // v8_initialized = false;
   V8::Dispose();
   v8::V8::ShutdownPlatform();
-
-  return 0;
-}
-}  // namespace
-
-// Entry point function for all processes.
-//int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
-int main() {
-  OutputDebugString(L"############################ checkpoint 1\n");
-
-  /*
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-
-    // Enable High-DPI support on Windows 7 or newer.
-    CefEnableHighDPISupport();
-
-    void* sandbox_info = NULL;
-
-  #if defined(CEF_USE_SANDBOX)
-    // Manage the life span of the sandbox information object. This is necessary
-    // for sandbox support on Windows. See cef_sandbox_win.h for complete
-  details. CefScopedSandboxInfo scoped_sandbox; sandbox_info =
-  scoped_sandbox.sandbox_info(); #endif
-
-    // Provide CEF with command-line arguments.
-    CefMainArgs main_args(hInstance);
-
-    // CEF applications have multiple sub-processes (render, plugin, GPU, etc)
-    // that share the same executable. This function checks the command-line
-  and,
-    // if this is a sub-process, executes the appropriate logic.
-    int exit_code = CefExecuteProcess(main_args, NULL, sandbox_info);
-    if (exit_code >= 0) {
-      // The sub-process has completed so return here.
-      return exit_code;
-    }
-
-    // Specify CEF global settings here.
-    CefSettings settings;
-
-  #if !defined(CEF_USE_SANDBOX)
-    settings.no_sandbox = true;
-  #endif
-
-    // SimpleApp implements application-level callbacks for the browser process.
-    // It will create the first browser instance in OnContextInitialized() after
-    // CEF has initialized.
-    CefRefPtr<SimpleApp> app(new SimpleApp);
-
-    // Initialize CEF.
-    CefInitialize(main_args, settings, app.get(), sandbox_info);
-
-    // Run the CEF message loop. This will block until CefQuitMessageLoop() is
-    // called.
-    // CefRunMessageLoop();
-        */
-
-  node_start();
-
-  /*
-// Shut down CEF.
-CefShutdown();
-*/
 
   return 0;
 }

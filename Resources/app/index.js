@@ -1,4 +1,7 @@
 const fs = require('fs')
+const url = require('url')
+const path = require('path')
+
 const { app, ipc, BrowserWindow } = require('electron')
 
 function getTime(){
@@ -25,8 +28,15 @@ function createWindow() {
     console.log("create window called")
     // Create the browser window.
     //win = new BrowserWindow({ width: 800, height: 600 })
-    win = new BrowserWindow("http://www.google.com", "Window Title Test", 200, 100)
+    //win = new BrowserWindow("http://www.google.com", "Window Title Test", 200, 100)
 
+    let fileurl = url.format({
+        pathname: path.join(__dirname, 'index.html'),
+        protocol: 'file:',
+        slashes: true
+    })
+
+    win = new BrowserWindow(fileurl, "Window Title Test", 200, 100)
 
     // and load the index.html of the app.
     win.loadFile('index.html')
@@ -73,7 +83,7 @@ app.on('activate', () => {
 console.log("global c++ constant:", globalConstantTest) //"I was set in C++"
 
 // global C++ method
-let z = addFast(4, 9)
+let z = customMethod(4, 9)
 console.log("z = ", z)
 
 // timers = stress testing event loop + kepp script alive
