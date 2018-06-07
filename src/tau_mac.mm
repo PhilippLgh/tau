@@ -17,8 +17,8 @@
 
 #include "include/cef_application_mac.h"
 #include "include/wrapper/cef_helpers.h"
-#include "tests/cefsimple/simple_app.h"
-#include "tests/cefsimple/simple_handler.h"
+#include "cef_client_app.h"
+#include "simple_handler.h"
 
 // Receives notifications from the application.
 @interface SimpleAppDelegate : NSObject<NSApplicationDelegate>
@@ -132,10 +132,10 @@ int main(int argc, char* argv[]) {
   // Specify CEF global settings here.
   CefSettings settings;
 
-  // SimpleApp implements application-level callbacks for the browser process.
+  // CefClientApp implements application-level callbacks for the browser process.
   // It will create the first browser instance in OnContextInitialized() after
   // CEF has initialized.
-  CefRefPtr<SimpleApp> app(new SimpleApp);
+  CefRefPtr<CefClientApp> app(new CefClientApp);
 
   // Initialize CEF for the browser process.
   CefInitialize(main_args, settings, app.get(), NULL);

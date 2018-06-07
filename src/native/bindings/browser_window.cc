@@ -48,7 +48,7 @@ namespace api {
 	int getInt(const FunctionCallbackInfo<Value>& args, int index) {
 		Isolate* isolate = args.GetIsolate();
 		v8::Maybe<double> mWidth = args[index]->NumberValue(isolate->GetCurrentContext());
-		return std::round(mWidth.ToChecked());
+		return (int)(mWidth.ToChecked()); // TODO use round?
 	}
 	//end helpers
 
@@ -133,7 +133,7 @@ namespace api {
 	}
 
 	BrowserWindow::~BrowserWindow() {
-		//api_web_contents_->DestroyWebContents(true /* async /);
+		//api_web_contents_->DestroyWebContents(true / async /);
 	}
 
 	void BrowserWindow::Init(v8::Isolate* isolate, v8::Local<v8::Object> wrapper) {

@@ -21,6 +21,13 @@ using ::v8::Value;
 
 #include "native/bindings/ipc.h"
 
+#undef CHECK
+#undef CHECK_EQ
+#undef CHECK_NE
+#undef CHECK_LE
+#undef CHECK_LT
+#undef CHECK_GE
+#undef CHECK_GT
 #include "include/cef_app.h"
 
 // helpers:
@@ -57,13 +64,13 @@ void log(std::string str) {
   ss << "init path: " << str << "\n";
   OutputDebugStringA(ss.str().c_str());
 }
-#elif APPLE
+#elif __APPLE__
 #include <mach-o/dyld.h>
 const std::string PATH_SEPARATOR = "/";
 std::string getexepath() {
   char path[1024];
   uint32_t size = sizeof(path);
-  int count = _NSGetExecutablePath(path, &size);
+  _NSGetExecutablePath(path, &size);
   path[size] = '\0';
   std::string res = std::string(path, size);
   return res;
@@ -130,7 +137,7 @@ int node_start() {
 
   // std::unique_ptr<v8::Platform> platform =
   // v8::platform::NewDefaultPlatform(); V8::InitializePlatform(platform.get());
-  node::MultiIsolatePlatform* platform =
+  node::MultiIsolatePlatform* platform __unused =
       node::GetMainThreadMultiIsolatePlatform();
   // V8::InitializePlatform(platform);
 
@@ -192,7 +199,7 @@ int node_start() {
 
     //..................
 
-    Local<Object> process(env->process_object());
+    // Local<Object> process(env->process_object());
     // FIXME process is nullptr
     // process->Set(v8::String::NewFromUtf8(isolate, "resourcesPath"),
     // String::NewFromUtf8(isolate, "resources_path_here"));
