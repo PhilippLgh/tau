@@ -1,8 +1,6 @@
 # Tau
 
-Tau uses CEF as "webview" and Node.js as main process runtime. It is meant to be a safer Electron alternative.
-
-The [Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef/) (CEF) is a simple framework for embedding Chromium-based browsers in other applications.
+Tau uses [Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef/) (CEF3) as "webview" and Node.js as main process runtime. It is meant to be a safer Electron alternative.
 
 # Quick Links
 
