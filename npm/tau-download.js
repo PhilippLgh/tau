@@ -41,7 +41,7 @@ function downloadTau(config){
 
   // `${binaryName}-${suffix}.zip` :
   // tau-v0.0.1-win32-x64.zip
-  const platform = 'win32'
+  const platform = process.platform
   const arch = 'x64'
   const version = '0.0.1'
 
