@@ -10,5 +10,8 @@ if (fs.existsSync(pathFile)) {
   throw new Error('Tau failed to install correctly, please delete node_modules/tauon and try installing again')
 }
 */
-
-module.exports = "dist/tau.exe"
+if (process.platform === 'darwin') {
+  module.exports = path.join(__dirname, 'dist', 'tau.app', 'Contents', 'MacOS', 'tau')
+} else {
+  module.exports = path.join(__dirname, 'dist', 'tau.exe')
+}
